@@ -5,7 +5,9 @@ name: Vue Typescript Build & Deployment CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+  repository_dispatch:
+    types: [build]
   workflow_dispatch:
 
 jobs:
@@ -14,35 +16,34 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    
+
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{steps.deployment.outputs.page_url}}
-    
+
     strategy:
       matrix:
         node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        repository: PowerPhone/PowerPhone-VuePress
-        lfs: 'true'
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: npm run build
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
+      - uses: actions/checkout@v3
+        with:
+          repository: PowerPhone/PowerPhone-VuePress
+          lfs: "true"
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm install
+      - run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
           # Upload entire repository
-          path: '.vuepress/dist'
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2
-    
+          path: ".vuepress/dist"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
